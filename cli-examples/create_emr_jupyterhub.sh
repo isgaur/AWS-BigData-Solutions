@@ -18,3 +18,13 @@ sudo docker exec -it 06550d4c4cc0  /bin/bash
 #Restart jupyterhub inside a Docker
 
 sudo docker restart jupyterhub
+
+#Checks Installation for JupyterLab
+
+sudo docker exec jupyterhub bash -c "conda list" | grep -i "jupyterlab"
+
+# To open JupyterLab 
+
+sudo vi /etc/jupyter/conf/jupyterhub_config.py
+
+
