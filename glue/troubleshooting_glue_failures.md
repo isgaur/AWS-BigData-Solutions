@@ -137,7 +137,6 @@ Implement code to batch the dataset and thread the application. This will allow 
 Please see the below GitBan example from our Github about threading PySpark applications which provides an example:
 https://github.com/awslabs/aws-big-data-blog/tree/master/aws-blog-spark-parquet-conversion
 
-(as per mitczach@ https://paragon-na.amazon.com/hz/view-case?caseId=4331540191)
 
 
 6. Change FetchSize for JDBC
@@ -151,7 +150,7 @@ JDBC OOM on Executor on read:
 5. JDBC partitioning on write: configure batchsize
 
 # Requires more information
-(as per: 00:36:35 of AWS Performance and Scale DeepDrive: https://broadcast.amazon.com/videos/86318)
+
 
 
 
