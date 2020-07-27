@@ -1,3 +1,5 @@
+//spark-shell --conf "spark.serializer=org.apache.spark.serializer.KryoSerializer" --conf "spark.sql.hive.convertMetastoreParquet=false" --jars /usr/lib/hudi/hudi-spark-bundle.jar,/usr/lib/spark/external/lib/spark-avro.jar
+
 import org.apache.hudi.DataSourceWriteOptions
 import org.apache.hudi.config.HoodieWriteConfig
 import org.apache.hudi.hive.MultiPartKeysValueExtractor
