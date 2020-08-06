@@ -33,3 +33,6 @@ def toInt(s):
 
 
 df2 = df.withColumn( 'semployee',colsInt('employee'))
+
+
+Ref: https://www.bmc.com/blogs/how-to-write-spark-udf-python/
