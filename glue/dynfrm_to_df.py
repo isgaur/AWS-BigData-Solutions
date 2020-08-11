@@ -87,8 +87,5 @@ df.show(2)
 # Save it, partition.
 df.write.mode("overwrite").partitionBy("year").parquet("s3://xxx/Glue/data777/")
 
-## withYear = DynamicFrame.fromDF(df, glueContext, "withyear")
-## datasink4 = glueContext.write_dynamic_frame.from_options(frame = withYear, connection_type = "s3", connection_options = {"path": "s3://datalake-dev-east-2/data/fannie-mae/singlefamily_quarterly/release_20200723/acquisition/parquet/" ,"partitionKeys": ["year"]}, format = "parquet", transformation_ctx = "datasink4")
-## datasink4 = glueContxt.write_dyneamic_frame.from_options(frame = dropnullfields3, connection_type = "s3", connection_options = {"path": "s3://datalake-dev-east-2/data/fannie-mae/singlefamily_quarterly/release_20200723/acquisition/parquet/"}, format = "parquet", transformation_ctx = "datasink4")
 
 job.commit()
