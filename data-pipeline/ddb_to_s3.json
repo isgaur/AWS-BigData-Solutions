@@ -1,7 +1,7 @@
 {
   "objects": [
     {
-      "directoryPath": "s3://aws-isgaur-logs/ddb_to_s3/latest_run",
+      "directoryPath": "s3://xxx-xx-xx/ddb_to_s3/latest_run",
       "dataFormat": {
         "ref": "DataFormatId_pk6BE"
       },
@@ -58,7 +58,7 @@
       "failureAndRerunMode": "CASCADE",
       "resourceRole": "DataPipelineDefaultResourceRole",
       "role": "DataPipelineDefaultRole",
-      "pipelineLogUri": "s3://aws-isgaur-logs/ddb_to_s3/logs/",
+      "pipelineLogUri": "s3://xx-xx-xx/ddb_to_s3/logs/",
       "scheduleType": "ONDEMAND",
       "name": "Default",
       "id": "Default"
