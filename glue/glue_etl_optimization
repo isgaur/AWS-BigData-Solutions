@@ -11,3 +11,7 @@ Now as to why the number of partitions is low: if your code does not specify any
         1. One partition for each file in the input path, if the files are smaller than 128 MiB or they are compressed in a non-splittable format.
 
         2. If your files are splittable and they are larger than 128 MiB, one partition per each 128 MiB of data.
+
+The recommendation is to analyze the file sizes and formats of the data being processed here. In any case, you should be able to increase parallelism easily by simply doing a repartition operation on the DynamicFrames/DataFrame, set to a value that guarantees maximum resource utilization.
+
+Each Spark executor in Glue handles 4 tasks concurrently, which means that with 25 DPU and the Standard worker type 188 partitions or more would yield you maximum resource utilization.
