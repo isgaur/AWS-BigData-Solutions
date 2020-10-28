@@ -12,19 +12,9 @@ I would like to recommend is enabling useS3ListImplementation. With useS3ListImp
 
      The useS3ListImplementation feature is an implementation of the Amazon S3 ListKeys operation, which splits large results sets into multiple responses. It's one of the best practice as well to use useS3ListImplementation in case you want to use Glue Job bookmarks down the line. USE PARQUET FILES instead of csv files while writing the data as an output in the Glue ETL Job. ( attached the example on how to use parquet while writing a dataframe in Spark ) 
 
-        After I analyzed the code, I did recommend you to use Parquet file format for writing the dataset as it will speed up the write process for glue etl job.
-
-    ==============================================================
-    Advantages/Why to Use Parquet file Format with Glue ETL Job ?
-    ==============================================================
-
-          Parquet files are splittable, since the blocks can be located after reading the footer and can then be processed in parallel.Also Parquet files don’t need sync markers since the block boundaries are stored in the footer metadata.This is possible because the metadata is written after all the blocks have been written, so the writer can retain the block boundary positions in memory until the file is closed.Some of the other Advantages : 
-
-            1. Reduces IO operations.
-            2. Fetches specific columns that you need to access.
-            3. It consumes less space.
-            4. Support type-specific encoding.
-
+        Also please keep in mind The 'useS3ListImplementation' option is intended for Driver (OOM issues  if any ) and thus will not result in any improvements for the eexecutors (OOM issue if any ). 
+        
+        Executor (OOM issues ) are simply caused by Spark parallelism: Spark will distribute your dataset across a cluster of nodes, and if one of these nodes receives more data than it can handle, the executor running within it will crash. This data excess can be caused by improper partitioning (data skew, as imbalance in the data distribution resulting in one node receiving more data than the rest) or by non-splittable compression formats being used (as uncompressed data in memory can consume much larger space and Spark has no way to predict the uncompressed size of the partition).
 
 
 2. Add more DPU's - Please take a deeper look at the job execution metric which shows the required vs  allocated max dpu(s) and accordingly increase the number of DPU's. This is explained well here[4] how to interpret the metrics.
