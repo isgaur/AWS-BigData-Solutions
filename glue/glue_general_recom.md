@@ -125,6 +125,23 @@ For example - prod/image-tags/plugin/entity/v1/year=2020/month=04/day=19/ here ,
 
 If these are less than 50K please do not use s3 "recurse": True and "groupFiles": "inPartition"  as AWS glue uses these two param's internally and come up with the optimum number based on the number of partitions it determines while reading the data from AWS s3. Apache Spark v2.2 can manage approximately 650,000 files on the standard AWS Glue worker type. So as per my knowledge we do not require these params.
 
+You can reduce the excessive parallelism from the launch of one Apache Spark task to process each file by using AWS Glue file grouping. This method reduces the chances of an OOM exception on the Spark driver. To configure file grouping, you need to set groupFiles and groupSize parameters. The following code example uses AWS Glue DynamicFrame API in an ETL script with these parameters:
+
+dyf = glueContext.create_dynamic_frame_from_options("s3",
+    {'paths': ["s3://input-s3-path/"],
+    'recurse':True,
+    'groupFiles': 'inPartition',
+    'groupSize': '1048576'}, 
+    format="json")
+
+You can set groupFiles to group files within a Hive-style S3 partition (inPartition) or across S3 partitions (acrossPartition). In most scenarios, grouping within a partition is sufficient to reduce the number of concurrent Spark tasks and the memory footprint of the Spark driver. In benchmarks, AWS Glue ETL jobs configured with the inPartition grouping option were approximately seven times faster than native Apache Spark v2.2 when processing 320,000 small JSON files distributed across 160 different S3 partitions. A large fraction of the time in Apache Spark is spent building an in-memory index while listing S3 files and scheduling a large number of short-running tasks to process each file. With AWS Glue grouping enabled, the benchmark AWS Glue ETL job could process more than 1 million files using the standard AWS Glue worker type.
+
+groupSize is an optional field that allows you to configure the amount of data each Spark task reads and processes as a single AWS Glue DynamicFrame partition. Users can set groupSize if they know the distribution of file sizes before running the job. The groupSize parameter allows you to control the number of AWS Glue DynamicFrame partitions, which also translates into the number of output files. However, using a considerably small or large groupSize can result in significant task parallelism or under-utilization of the cluster, respectively.
+
+By default, AWS Glue automatically enables grouping without any manual configuration when the number of input files or task parallelism exceeds a threshold of 50,000. The default value of the groupFiles parameter is inPartition, so that each Spark task only reads files within the same S3 partition. AWS Glue computes the groupSize parameter automatically and configures it to reduce the excessive parallelism, and makes use of the cluster compute resources with sufficient Spark tasks running in parallel.
+
+
+
 
 Check the number of Tasks which gets created because more the # of tasks created in spark stages , more the time it will take overall.
 
