@@ -170,6 +170,53 @@ Recommendation
 
 3. Also please enable glue job metrics and take a look at it while the job is running.As in we want to see for example - How many number of maximum needed executors vs the number of active executors over the course of job execution which will help us to determine if we need to bump up the number of DPU's as well.
 
+13. pushdown predicate : 
+
+Glue jobs allow the use of push down predicates to prune the unnecessary partitions from the table before the underlying data is read. This is useful when you have a large number of partitions in a table and you only want to process a subset of them in your Glue ETL job. Pruning catalog partitions reduces both the memory footprint of the driver and the time required to list the files in the pruned partitions. Push down predicates are applied first to ignore unnecessary partitions before the job bookmark and other exclusions can further filter the list of files to be read from each partition. Below is an example to how to use push down predicates to only process data for events logged only on weekends.
+
+partitionPredicate ="date_format(to_date(concat(year, '-', month, '-', day)), 'E') in ('Sat', 'Sun')"
+
+datasource = glue_context.create_dynamic_frame.from_catalog(
+    database = "githubarchive_month", 
+    table_name = "data", 
+    push_down_predicate = partitionPredicate)
+
+
+14.   Grouping: AWS Glue allows you to consolidate multiple files per Spark task using the file grouping feature. Grouping files together reduces the memory footprint on the Spark driver as well as simplifying file split orchestration. Without grouping, a Spark application must process each file using a different Spark task. Each task must then send mapStatus object containing the location information to the Spark driver. In our testing using AWS Glue standard worker type, we found that Spark applications processing more than roughly 650,000 files often cause the Spark driver to crash with an out of memory exception as shown by the following error message:
+
+    # java.lang.OutOfMemoryError: Java heap space
+    # -XX:OnOutOfMemoryError="kill -9 %p"
+    # Executing /bin/sh -c "kill -9 12039"...
+
+        groupFiles allows you to group files within a Hive-style S3 partition (inPartition) and across S3 partitions (acrossPartition). groupSize is an optional field that allows you to configure the amount of data to be read from each file and processed by individual Spark tasks.
+
+
+        dyf = glueContext.create_dynamic_frame_from_options("s3",
+    {'paths': ["s3://input-s3-path/"],
+    'recurse':True,
+    'groupFiles': 'inPartition',
+    'groupSize': '1048576'}, 
+    format="json")
+
+
+15. Exclusions for S3 Paths: To further aid in filtering out files that are not required by the job, AWS Glue introduced a mechanism for users to provide a glob expression for S3 paths to be excluded. This speeds job processing while reducing the memory footprint on the Spark driver. The following code snippet shows how to exclude all objects ending with _metadata in the selected S3 path.
+
+    dyf = glueContext.create_dynamic_frame_from_options("s3",
+        {'paths': ["s3://input-s3-path/"],
+        'exclusions': "\"[\"input-s3-path/**_metadata\"]\""}, 
+        format="json")
+
+
+16. Optimize Spark queries: Inefficient queries or transformations can have a significant impact on Apache Spark driver memory utilization.Common examples include:
+
+  collect is a Spark action that collects the results from workers and return them back to the driver. In some cases the results may be very large overwhelming the driver. It is recommended to be careful while using collect as it can frequently cause Spark driver OOM exceptions as shown below:
+
+            An error occurred while calling 
+            z:org.apache.spark.api.python.PythonRDD.collectAndServe.
+            Job aborted due to stage failure:
+            Total size of serialized results of tasks is bigger than spark.driver.maxResultSize
+
+  Shared Variables: Apache Spark offers two different ways to share variables between Spark driver and executors: broadcast variables and accumulators. Broadcast variables are useful to provide a read-only copy of data or fact tables shared across Spark workers to improve map-side joins. Accumulators are useful to provide a writeable copy to implement distributed counters across Spark executors. Both should be used carefully and destroyed when no longer needed as they can frequently result in Spark driver OOM exceptions.
 Reference documentation:
 
 [1] https://aws.amazon.com/premiumsupport/knowledge-center/glue-oom-java-heap-space-error/
