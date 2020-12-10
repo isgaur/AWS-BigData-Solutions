@@ -95,6 +95,30 @@ Through Glue APIs via CLI or SDK:
 
 11.   if using s3 optimized committer is not an option -> Writing your Parquet files using the 'glueparquet' format option instead of 'parquet'. This option will make use of the 'DirectParquetOutputCommitter' class which directly writes the output to the designated output path instead of writing to a temporary path, then moving. Please keep in mind that the 'glueparquet' option has some limitations[2], so I would recommend reading the provided documentation links [2] and doing thorough testing before implementing it. 
 
+AWS Glue offers an optimized Apache Parquet writer when using DynamicFrames to improve performance. Apache Parquet format is generally faster for reads than writes because of its columnar storage layout and a pre-computed schema that is written with the data into the files. AWS Glue’s Parquet writer offers fast write performance and flexibility to handle evolving datasets. Unlike the default Apache Spark Parquet writer, it does not require a pre-computed schema or schema that is inferred by performing an extra scan of the input dataset.
+
+You can enable the AWS Glue Parquet writer by setting the format parameter of the write_dynamic_frame.from_options function to glueparquet. As data is streamed through an AWS Glue job for writing to S3, the optimized writer computes and merges the schema dynamically at runtime, which results in faster job runtimes. The AWS Glue Parquet writer also enables schema evolution by supporting the deletion and addition of new columns.
+
+You can tune the AWS Glue Parquet writer further by setting the format_options parameters. See the following code example:
+
+block_size = 128*1024*1024
+page_size = 1024*1024
+glueContext.write_dynamic_frame.from_options(frame = dyFrame, 
+connection_type = "s3", connection_options = {"path": output_dir}, 
+format = "glueparquet", 
+format_options = {"compression": "snappy", 
+                  blockSize = block_size, pageSize = page_size})
+
+The default values for format_options are the following:
+
+    compression is “snappy”
+    blockSize is 128 MB
+    pageSize is 1 MB
+
+The blockSize specifies the size of a row group in a Parquet file that is buffered in memory. The pageSize specifies the size of the smallest unit in a Parquet file that must be read fully to access a single record.
+
+
+
 12. If the reading from s3 is slow => Check how many files do we have in the source i.e. in AWS s3 bucket .
 
 For example - prod/image-tags/plugin/entity/v1/year=2020/month=04/day=19/ here , how many part files approx. ? 
