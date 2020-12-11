@@ -46,3 +46,10 @@ df.write.parquet("/aws-xx-logs/Glue/glue_bookmark_issue_non_partitioned/")
         datasource0.printSchema()
       
 datasink2 = glueContext.write_dynamic_frame.from_options(frame = datasource0, connection_type = "s3", connection_options = {"path": "s3://aws-xx-logs/Glue/glue_bookmark_issue_partitioned/", "partitionKeys": ["YEAR","MONTH","DAY","HOUR"]}, format = "parquet",transformation_ctx = "datasink2")
+
+#Date partitioned
+
+df = sqlContext.createDataFrame([
+         ("7","ishan","kompressor","mbenz","honda",10.2,"hello","how",3,11.1,11.2,11.3,11.4,11.5,"10-20-2020"),
+         ("8","rajat","komp","mb","ho",123.2,"bye","wow53",55,55.2,55.3,55.4,55.5,55.6,"11-20-2020"),],
+         ["cusip","sym_cd","bsym_id","issuer_nm","scrty_ds","cpn_rt","mtrty_dt","num_trades","tot_qty_opb","high_price","low_price","median_px","vwap_px","px_stand_dev_vw","date"])
