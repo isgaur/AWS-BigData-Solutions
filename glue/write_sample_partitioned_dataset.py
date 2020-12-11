@@ -1,3 +1,21 @@
+import sys
+from awsglue.transforms import *
+from awsglue.utils import getResolvedOptions
+from pyspark.context import SparkContext
+from awsglue.context import GlueContext
+from awsglue.job import Job
+import datetime
+import boto3
+
+sc = SparkContext()
+glueContext = GlueContext(sc)
+job = Job(glueContext)
+job.init(job_name, args)
+
+
+
+
+
 df = sqlContext.createDataFrame([
          (7,"ishan","kompressor","mbenz"),
          (14,"john","wrangler","jeep"),],
