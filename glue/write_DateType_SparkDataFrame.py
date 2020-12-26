@@ -13,6 +13,9 @@ rdd= values.map(lambda t: Row(A=t[0],date=datetime.datetime.strptime(t[1], "%Y-%
 
 df = sqlContext.createDataFrame(rdd, schema)
 
+from pyspark.sql.functions import lit
+
+
 df5 = df4.withColumn("name", lit('ishan'))
 
 df6 = df5.withColumn("roll_id", lit(7))
