@@ -36,7 +36,9 @@ Resolution :
 
 3) Look in the log files on the failing nodes. You want to look for the text "Killing container". If you see the text "running beyond physical memory limits", increasing memoryOverhead will - in my experience - solve the problem.
 
-4) --conf spark.blacklist.enabled=true
+4) --conf spark.blacklist.enabled=true - This can be set either at the job level using the --conf job argument --conf spark.blacklist.enabled=true or in the job script as a SparkConf before creating the SparkContext.
+
+The blacklist feature will make sure that a task is not rescheduled on the failed executor more than once. This will prevent the race condition from happening.
 
 5)  leaded to MetadataFetchFailedException that in map stage not reduce stage . just do df_rdd.repartition(nums) before reduceByKey()
 
