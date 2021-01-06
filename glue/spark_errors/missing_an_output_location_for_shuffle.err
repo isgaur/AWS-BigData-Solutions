@@ -38,7 +38,7 @@ Resolution :
 
 4) --conf spark.blacklist.enabled=true - This can be set either at the job level using the --conf job argument --conf spark.blacklist.enabled=true or in the job script as a SparkConf before creating the SparkContext.
 
-The blacklist feature will make sure that a task is not rescheduled on the failed executor more than once. This will prevent the race condition from happening.
+The blacklist feature will make sure that a task is not rescheduled on the failed executor more than once. This will prevent the race condition from happening.Details on spark executor blacklist - https://blog.cloudera.com/blacklisting-in-apache-spark/
 
 5)  leaded to MetadataFetchFailedException that in map stage not reduce stage . just do df_rdd.repartition(nums) before reduceByKey()
 
