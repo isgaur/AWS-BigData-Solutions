@@ -4,15 +4,17 @@ from awsglue.utils import getResolvedOptions
 from pyspark.context import SparkContext
 from awsglue.context import GlueContext
 from awsglue.job import Job
-import datetime
-import boto3
-
+from pyspark.sql.functions import unix_timestamp
+from pyspark.sql.functions import from_unixtime
+from pyspark.sql.functions import isnan, when, count, col
+from awsglue.dynamicframe import DynamicFrame
+from pyspark.sql import SparkSession
 sc = SparkContext()
 glueContext = GlueContext(sc)
+spark = glueContext.spark_session
+
 job = Job(glueContext)
 job.init(job_name, args)
-
-
 
 
 
