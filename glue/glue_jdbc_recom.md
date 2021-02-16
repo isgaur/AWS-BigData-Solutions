@@ -45,6 +45,50 @@ val options = JsonOptions(optionsMap)
 val jdbcWrapper = JDBCWrapper(glueContext, options)
 glueContext.getSink("postgresql", options).writeDynamicFrame(dyf)
 
+Passing it in write_dynamic_frame.from_options:
+--------------------------------------------------------
+conn_opt = {"url": "jdbc:postgresql://db-cluster.cluster-xxxxxxxxxx.us-east-1.rds.amazonaws.com:5480/dbxxx?sslmode=require", "user": "postgres_usre", "password": "******", "dbtable":"public.postgrestable_name", "bulkSize":"100"} 
+datasink5=glueContext.write_dynamic_frame.from_options(frame = initialsql2, connection_type = "postgresql_conn", connection_options = conn_opt)
+
+
+
+
+BulkInserts with Native Spark : 
+
+batch size can be increased from its default value of 1000, and thereby increase the performance on JDBC driver.
+
+Batch size as a parameter is supported in spark data frame[1].  Batch size parameter is applicable only when the connection is used as a source, not as a sink [2]. The only possible connection options (for connection type 'documentdb' and 'mongodb') to tune the parameters in the JDBC DynamicFrameWriter is specified in [2].
+
+The JDBC batch size, which determines how many rows to insert per round trip. This can help performance on JDBC drivers. This option applies only to writing. It defaults to 1000.
+
+###############
+jdbcDF = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:postgresql://....") \
+    .option("dbtable", "tablename") \
+    .option("user", "") \
+    .option("password", "") \
+    .load()
+
+jdbcDF.write \
+    .format("jdbc")\
+    .option("url", "jdbc:postgresql:") \
+    .option("dbtable", "") \
+    .option("user", "") \
+    .option("password", "") \
+    .option("batchsize",10000) \
+    .save()
+##############3
+
+Resources:
+[1] Retrieved From - https://spark.apache.org/docs/latest/sql-data-sources-jdbc.html
+[2] Retrieved From - https://docs.aws.amazon.com/glue/latest/dg/aws-glue-programming-etl-connect.html
+https://docs.aws.amazon.com/glue/latest/dg/monitor-profile-debug-oom-abnormalities.html#monitor-profile-debug-oom-executor
+Regarding numPartitons:
+https://spark.apache.org/docs/2.2.0/sql-programming-guide.html#jdbc-to-other-databases
+
+
+
 Join Optimizations: One common reason for Apache Spark applications running out of memory is the use of un-optimized joins across two or more tables. This is typically a result of data skew due to the distribution of join columns or an inefficient choice of join transforms. Additionally, ordering of transforms and filters in the user script may limit the Spark query planner’s ability to optimize. There are 3 popular approaches to optimize join’s on AWS Glue.
     Filter tables before Join: You should pre-filter your tables as much as possible before joining. This helps to minimize the data shuffled between the executors over the network. You can use AWS Glue push down predicates for filtering based on partition columns, AWS Glue exclusions for filtering based on file names, AWS Glue storage class exclusions for filtering based on S3 storage classes, and use columnar storage formats such as Parquet and ORC that support discarding row groups based on column statistics such as min/max of column values.
     Broadcast Small Tables: Joining tables can result in large amounts of data being shuffled or moved over the network between executors running on different workers. Because of this, Spark may run out of memory and spill the data to physical disk on the worker. This behavior can be observed in the following log message:
