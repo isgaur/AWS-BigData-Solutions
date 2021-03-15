@@ -32,21 +32,19 @@ Resolution :
 
 1) You could try to run with more partitions (do a repartition on your dataframe). Memory issues typically arise when one or more partitions contain more data than will fit in memory.
 
-2) I'm noticing that you have not explicitly set spark.yarn.executor.memoryOverhead, so it will default to max(386, 0.10* executorMemory) which in your case will be 400MB. That sounds low to me. I would try to increase it to say 1GB (note that if you increase memoryOverhead to 1GB, you need to lower --executor-memory to 3GB)
+2) Look in the log files on the failing nodes. You want to look for the text "Killing container". If you see the text "running beyond physical memory limits", increasing memoryOverhead will - in my experience - solve the problem.
 
-3) Look in the log files on the failing nodes. You want to look for the text "Killing container". If you see the text "running beyond physical memory limits", increasing memoryOverhead will - in my experience - solve the problem.
-
-4) --conf spark.blacklist.enabled=true - This can be set either at the job level using the --conf job argument --conf spark.blacklist.enabled=true or in the job script as a SparkConf before creating the SparkContext.
+3) --conf spark.blacklist.enabled=true - This can be set either at the job level using the --conf job argument --conf spark.blacklist.enabled=true or in the job script as a SparkConf before creating the SparkContext.
 
 The blacklist feature will make sure that a task is not rescheduled on the failed executor more than once. This will prevent the race condition from happening.Details on spark executor blacklist - https://blog.cloudera.com/blacklisting-in-apache-spark/
 
-5)  leaded to MetadataFetchFailedException that in map stage not reduce stage . just do df_rdd.repartition(nums) before reduceByKey()
+4)  leaded to MetadataFetchFailedException that in map stage not reduce stage . just do df_rdd.repartition(nums) before reduceByKey()
 
-6) It will probably help to troubleshoot if needed by the ST - Try using the job parameter: --enable-monitoring true
+5) It will probably help to troubleshoot if needed by the ST - Try using the job parameter: --enable-monitoring true
 
 This will cause the driver to dump the thread stack if this occurs again and gain more visibility to the issue.Please note that this is different from the --enable-metrics flag. --enable-monitoring is an internal debug flag that is not documented.
 
-7) You can enable spark debug level logs by doing glueContext.sparkContext.setLogLevel("DEBUG") for troubleshooting purpose.
+6) You can enable spark debug level logs by doing glueContext.sparkContext.setLogLevel("DEBUG") for troubleshooting purpose.
 
 
 
