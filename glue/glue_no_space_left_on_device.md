@@ -28,3 +28,24 @@ Resolution :
         3a) If the metric is reporting a value lower than that, there's a partitioning issue. There's several reasons as to why this could be happening, but the easiest way to address it typically is to add a repartition call after your read operation. The number of partitions should be 4 times the number of executors you can have, so 40 in this case.
 
         3b) If not, your job is partitioning properly and you will need to provision more resources (workers) to handle the amount of data. In order to understand how many you can check the 'glue.driver.ExecutorAllocationManager.executors.numberMaxNeededExecutors' metric, which will tell you how many executors are needed to process your dataset with maximum parallelism.
+
+
+
+SOLUTION :
+
+
+One solution is to avoid using dataframes and use RDDs instead for repartitioning: read in the gzipped files as RDDs, repartition them so each partition is small, save them in a splittable format (for example, snappy).
+
+from pyspark.context import SparkContext
+
+sc = SparkContext.getOrCreate()
+rdd = sc.textFile("/path/to/gzipped/files/*.gz")
+
+# repartition into smaller chunks
+rdd = rdd.repartition(numPartitions=2500)
+
+# save 
+rdd.saveAsTextFile("path/to/save",
+                   compressionCodecClass="org.apache.hadoop.io.compress.SnappyCodec")
+
+
