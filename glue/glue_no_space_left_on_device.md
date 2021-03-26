@@ -1,8 +1,16 @@
 At times AWS Glue ETL Job fails with the error message : 
 
+
+Apache Spark uses local disk on Glue workers to spill data from memory that exceeds the heap space defined by the spark.memory.fraction configuration parameter. During the sort or shuffle stages of a job, Spark writes intermediate data to local disk before it can exchange that data between the different workers. Jobs may fail due to the following exception when no disk space remains:
+
 An error occurred while calling o85.pyWriteDynamicFrame. error while calling spill() on 
   org.apache.spark.util.collection.unsafe.sort.UnsafeExternalSorter@5f4bb34a : No space left on device
-  
+
+Most commonly, this is a result of a significant skew in the dataset that the job is processing. You can also identify the skew by monitoring the execution timeline of different Apache Spark executors using AWS Glue job metrics
+
+When you look at the memory profile of driver and executor - you will see the execution timeline and memory profile of different executors in an AWS Glue ETL job. One of the executors is probably straggling due to processing of a large partition, and actively consumes memory for the majority of the job’s duration.
+
+
 Recommendation : 
 
 This error message is thrown whenever a Spark application tries to spill data to disk to clear memory space and the underlying disk space becomes full. If a glue job is using a worker type say : G.1X worker type, which runs your jobs in nodes with 64 GiB volumes.
