@@ -49,3 +49,18 @@ rdd.saveAsTextFile("path/to/save",
                    compressionCodecClass="org.apache.hadoop.io.compress.SnappyCodec")
 
 
+from pyspark.context import SparkContext
+
+sc = SparkContext.getOrCreate()
+
+rdd = sc.textFile("s3://gdelt-open-data/v2/events/20150402114500.export.csv")
+
+rdd = rdd.repartition(numPartitions=4)
+
+sc._jsc.hadoopConfiguration().set("mapred.output.committer.class", "org.apache.hadoop.mapred.DirectFileOutputCommitter")
+
+
+rdd.saveAsTextFile("s3://aws-jupyterhubtest/csv_test_compression/new/",compressionCodecClass="org.apache.hadoop.io.compress.BZip2Codec")
+
+
+
