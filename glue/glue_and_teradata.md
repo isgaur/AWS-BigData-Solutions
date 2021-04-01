@@ -27,4 +27,5 @@ References:
 [1] https://aws.amazon.com/blogs/big-data/how-to-access-and-analyze-on-premises-data-stores-using-aws-glue/
 [2] https://www.teradata.com/Blogs/Teradata-and-AWS-Glue
 [3] https://aws.amazon.com/blogs/big-data/use-aws-glue-to-run-etl-jobs-against-non-native-jdbc-data-sources/
+[4] https://kontext.tech/column/spark/315/connect-to-teradata-in-pyspark-via-jdbc
 
