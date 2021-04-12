@@ -20,3 +20,18 @@ Total input dataset size / partition size =>  number of partitions
 ---
 [1]https://aws.amazon.com/premiumsupport/faqs/
 [2]https://dzone.com/articles/apache-spark-performance-tuning-degree-of-parallel
+
+  
+  
+
+The number of files that get written out is controlled by the parallelization of your DataFrame or RDD. So if your data is split across 10 Spark partitions you cannot write fewer than 10 files without reducing partitioning (e.g. coalesce or repartition).
+
+Now, having said that when data is read back in it could be split into smaller chunks based on your configured split size but depending on format and/or compression.
+
+If instead you want to increase the number of files written per Spark partition (e.g. to prevent files that are too large), Spark 2.2 introduces a maxRecordsPerFile option when you write data out. With this you can limit the number of records that get written per file in each partition. The other option of course would be to repartition.
+
+The following will result in 2 files being written out even though it's only got 1 partition:
+
+val df = spark.range(100).coalesce(1)
+df.write.option("maxRecordsPerFile", 50).save("/tmp/foo")
+
