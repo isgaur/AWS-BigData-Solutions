@@ -28,3 +28,7 @@ https://medium.com/@sambodhi_72782/spark-tuning-manual-47b98ccb2b2c
 https://community.cloudera.com/t5/Support-Questions/Spark-Job-long-GC-pauses/td-p/282690
 https://stackoverflow.com/questions/34589051/garbage-collection-time-very-high-in-spark-application-causing-program-halt/34590161 (edited
 */
+                                                                                                                                   
+ Option 3:
+                                                                                                                                   
+                                                                                                                                   spark.executor.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails --conf spark.driver.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails
