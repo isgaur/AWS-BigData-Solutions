@@ -30,5 +30,5 @@ https://stackoverflow.com/questions/34589051/garbage-collection-time-very-high-i
 */
                                                                                                                                    
  Option 3:
-                                                                                                                                   
-                                                                                                                                   spark.executor.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails --conf spark.driver.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails
+ 
+  spark.executor.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails --conf spark.driver.extraJavaOptions=-XX:+UseG1GC -XX:+PrintReferenceGC -XX:+PrintGCDetails
