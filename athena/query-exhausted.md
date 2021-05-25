@@ -2,6 +2,17 @@ Query exhausted errors can happen because of memory pressure on an Athena node, 
 
 You can see which operator is causing the issue by looking at the stack trace.
 
+Athena uses Presto as a query engine. Presto runs different stages of a query in memory. For a small number of queries and for certain operators, Presto brings all the data into a single nodes memory and may fail because it cannot spill pages to disk when memory is exhausted. 
+
+This is not a resource-related issue, but more related to how specific operators cannot handle large amounts of data. The Athena service team has rectified this for ‘GroupBy’ operator, enabling it to spill to disk now. We expect to finish the other operators in the coming months. 
+
+
+    Re-organize the queries
+    Convert data into Parquet/ORC formats and consider partitioning the data
+
+
+
+
 Error : 
 
 category: RESOURCE_ERROR
