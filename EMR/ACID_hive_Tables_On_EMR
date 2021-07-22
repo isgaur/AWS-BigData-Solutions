@@ -1,0 +1,12 @@
+(insert_only) or transactional table 
+
+    transactional table = Any Storage format , not restricted to ORC.
+    Does not support update and delete capability. 
+
+ (update and delete) or CRUD transactional table
+
+    You create a CRUD transactional table having ACID (atomic, consistent, isolated, and durable) properties when you need a managed table that you can update, delete, and merge
+
+
+
+
