@@ -40,11 +40,8 @@ The blacklist feature will make sure that a task is not rescheduled on the faile
 
 4)  leaded to MetadataFetchFailedException that in map stage not reduce stage . just do df_rdd.repartition(nums) before reduceByKey()
 
-5) It will probably help to troubleshoot if needed by the ST - Try using the job parameter: --enable-monitoring true
 
-This will cause the driver to dump the thread stack if this occurs again and gain more visibility to the issue.Please note that this is different from the --enable-metrics flag. --enable-monitoring is an internal debug flag that is not documented.
-
-6) You can enable spark debug level logs by doing glueContext.sparkContext.setLogLevel("DEBUG") for troubleshooting purpose.
+5) You can enable spark debug level logs by doing glueContext.sparkContext.setLogLevel("DEBUG") for troubleshooting purpose.
 
 
 
