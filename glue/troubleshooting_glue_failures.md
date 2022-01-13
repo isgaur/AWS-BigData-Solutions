@@ -89,7 +89,7 @@ On the other hand, if you provide the S3 path while creating the Dynamic Frame a
 
 More information: https://docs.aws.amazon.com/glue/latest/dg/grouping-input-files.html
 
-(as per: 00:16:13 of AWS Performance and Scale DeepDrive: https://broadcast.amazon.com/videos/86318)
+
 
 
 2. Use DataFrame
@@ -111,7 +111,7 @@ More information on converting your DynamicFrame to a DataFrame: http://docs.aws
 
 DynamicFrames construction doesn't require two passes over data to compute schema and then read them like Spark Dataframes. The schema is read on the fly. Data is read in lazy fasion, thus filtering can be applied before the data is really pulled.  # Requires more information
 
-(as per: 00:47:10 of AWS Performance and Scale DeepDrive: https://broadcast.amazon.com/videos/86318)
+
 
 
 4. S3 Partitioning and Push Down Predicate
